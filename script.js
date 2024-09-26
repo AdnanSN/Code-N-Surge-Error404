@@ -1,31 +1,27 @@
-const API_KEY = "54044c12095f9f72b37e06383d2623770ee99";
-const url = "https://newsdata.io/api/1/news";
+const API_KEY = "ff689b33fe4a470bbd9447846fe1c1b2";
+const url = "https://newsapi.org/v2/everything?q=";
 
-window.addEventListener("load", () => fetchNews("everything"));
+window.addEventListener("load", () => fetchNews("Everything"));
 
 async function fetchNews(query) {
-    try {
-        const res = await fetch(`${url}?apikey=${API_KEY}&q=${query}`);
-        const data = await res.json();
-        bindData(data.results);
-    } catch (error) {
-        console.error("Error fetching news:", error);
-    }
+    const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+    const data = await res.json();
+    bindData(data.articles);
 }
 
 function bindData(articles) {
-    const cardsContainer = document.getElementById("cardscontainer");
+    const cardsContainer = document.getElementById("cardscontainer");    
     const newsCardTemplate = document.getElementById("template-news-card");
-    cardsContainer.style.setProperty("--count", Math.floor(articles.length / 4));
+    cardsContainer.style.setProperty("--count",Math.floor(articles.length / 4))
     cardsContainer.innerHTML = "";
 
     articles.forEach((article) => {
-        if (!article.image_url) return;
+        if (!article.urlToImage) return;
 
         const cardClone = newsCardTemplate.content.cloneNode(true);
         fillDataInCard(cardClone, article);
         cardsContainer.appendChild(cardClone);
-    });
+    })
 }
 
 function fillDataInCard(cardClone, article) {
@@ -35,17 +31,19 @@ function fillDataInCard(cardClone, article) {
     const newsDesc = cardClone.querySelector("#news-desc");
     const card = cardClone.querySelector(".card");
 
-    newsImg.src = article.image_url;
+    newsImg.src = article.urlToImage;
     newsTitle.innerHTML = `${article.title.slice(0, 60)}...`;
-    newsDesc.innerHTML = article.description || "Description not available";
-    card.style.setProperty("grid-row", "span " + (Math.floor(Math.random() * 4) + 2));
+    newsDesc.innerHTML = `${article.description}`;
+    card.style.setProperty("grid-row","span "+(Math.floor( Math.random() * 4 ) + 2));
+    // card.style.setProperty("grid-column","span " +(Math.floor( Math.random() * 5 ) +1));
 
-    const date = new Date(article.pubDate).toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
-    newsSource.innerHTML = `${article.source_id || "Unknown Source"} · ${date}`;
+    const date = new Date(article.publishedAt).toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+
+    newsSource.innerHTML = `${article.source.name} · ${date}`;
 
     cardClone.firstElementChild.addEventListener("click", () => {
-        window.open(article.link, "_blank");
-    });
+        window.open(article.url, "_blank");
+    })
 }
 
 let curSelectedNav = null;
@@ -66,4 +64,4 @@ searchButton.addEventListener("click", () => {
     fetchNews(query);
     curSelectedNav?.classList.remove("active");
     curSelectedNav = null;
-});
+})
