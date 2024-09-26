@@ -1,5 +1,5 @@
-const API_KEY = "ff689b33fe4a470bbd9447846fe1c1b2";
-const url = "https://newsapi.org/v2/everything?q=";
+const API_KEY = "54044c12095f9f72b37e06383d2623770ee99";
+const url = "https://newsdata.io/api/1";
 
 window.addEventListener("load", () => fetchNews("Everything"));
 
